@@ -48,13 +48,15 @@ io.on("connection", (socket) => {
         const { error, user } = addUser({ id: socket.id, name, room });
         if (error) return callback(error);
 
-        socket.join(user.room);
         socket.emit("message", { user: "Moderator", text: `${user.name} welcome to ${user.room}` });
         socket.broadcast.to(user.room).emit("message", { user: "Moderator", text: `${user.name} has joined the chat` });
+        socket.join(user.room);
+        callback();
     });
 
     socket.on("sendMessage", (message, callback) => {
         const user = getUser(socket.id);
+        console.log(user, "lmaooo");
         io.to(user.room).emit("message", { user: user.name, text: message });
 
         callback();
