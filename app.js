@@ -56,14 +56,22 @@ io.on("connection", (socket) => {
 
     socket.on("sendMessage", (message, callback) => {
         const user = getUser(socket.id);
-        console.log(user, "lmaooo");
+
         io.to(user.room).emit("message", { user: user.name, text: message });
 
         callback();
     });
-    socket.on("disconnect", () => {
-        console.log("user disconnected");
-    });
+
+    try {
+        socket.on("disconnect", () => {
+            const user = getUser(socket.id);
+
+            io.to(user.room).emit("message", { user: "Moderator", text: `${user.name} has left the chat` });
+            console.log("user disconnected");
+        });
+    } catch (e) {
+        console.log(e);
+    }
 });
 /**
  * Normalize a port into a number, string, or false.

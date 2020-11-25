@@ -33,7 +33,7 @@ function HomePage({ history }) {
                                     <div>
                                         <h4 className="text-center mt-5 brim-text">Brim Portal</h4>
 
-                                        <Form onSubmit={handleSubmit(submitHandler)}>
+                                        <Form onSubmit={handleSubmit(submitHandler)} id="input-form">
                                             <Row>
                                                 <Col
                                                     xs={{ offset: 1, span: 10 }}
