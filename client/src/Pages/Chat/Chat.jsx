@@ -9,6 +9,7 @@ import "./chat.scss";
 import { Colors } from "../../values";
 const spawn = require("spawn-password");
 let ENDPOINT = "localhost:5000";
+let ENDPOINT2 = "/";
 let socket;
 const Chat = ({ location, history }) => {
     const { register, handleSubmit } = useForm();
@@ -20,7 +21,7 @@ const Chat = ({ location, history }) => {
     const [message, setmessage] = useState("");
     useEffect(() => {
         let { name, room, id } = queryString.parse(location.search);
-        socket = io(ENDPOINT);
+        socket = io(ENDPOINT2);
         setname(name);
         setroom(room);
         setid(id);
