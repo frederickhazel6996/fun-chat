@@ -6,28 +6,34 @@ import { useForm } from "react-hook-form";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import Emoji from "react-emoji-render";
 import "./chat.scss";
-
+const spawn = require("spawn-password");
 let ENDPOINT = "localhost:5000";
 let socket;
 const Chat = ({ location, history }) => {
     const { register, handleSubmit } = useForm();
     const [name, setname] = useState("");
     const [room, setroom] = useState("");
+    const [id, setid] = useState("");
+    const [users, setusers] = useState([]);
     const [messages, setmessages] = useState([]);
     const [message, setmessage] = useState("");
     useEffect(() => {
-        let { name, room } = queryString.parse(location.search);
+        let { name, room, id } = queryString.parse(location.search);
         socket = io(ENDPOINT);
         setname(name);
         setroom(room);
-        console.log(name, room);
-        socket.emit("join", { name, room }, () => {});
+        setid(id);
+
+        localStorage.setItem("id", id);
+
+        socket.emit("join", { name, room, id }, () => {});
 
         return () => {
-            socket.emit("disconnect");
+            socket.emit("closechat");
             socket.off();
+            // history.push("/");
         };
-    }, [location.search]);
+    }, [location.search, history]);
 
     let submitHandler = (data) => {
         setmessage(data.message);
@@ -39,13 +45,23 @@ const Chat = ({ location, history }) => {
 
     useEffect(() => {
         socket.on("message", (message) => {
-            setmessages([...messages, message]);
+            let newMessage = { user: message.user, text: message.text };
+            setmessages([...messages, newMessage]);
+            // console.log(message.users);
+            // setusers(message.users);
         });
     }, [messages]);
 
+    let tempUsers = users.map((user) => (
+        <div className="users-field">
+            {user}
+            <br />
+        </div>
+    ));
+
     let chat = messages.map((chat) =>
         chat.user === "Moderator" ? (
-            <Row>
+            <Row key={spawn.spawnAlphaNumericLength(20)}>
                 <Col>
                     <div className="text-center">
                         <p className="moderator-text ">
@@ -56,7 +72,7 @@ const Chat = ({ location, history }) => {
                 </Col>
             </Row>
         ) : chat.user === name.trim().toLowerCase() ? (
-            <Row>
+            <Row key={spawn.spawnAlphaNumericLength(20)}>
                 <Col>
                     <div className="bubble alt shadow rounded">
                         <div className="txt">
@@ -71,7 +87,7 @@ const Chat = ({ location, history }) => {
                 </Col>
             </Row>
         ) : (
-            <Row>
+            <Row key={spawn.spawnAlphaNumericLength(20)}>
                 <Col>
                     <div className="bubble shadow rounded">
                         <div className="txt">
@@ -89,51 +105,23 @@ const Chat = ({ location, history }) => {
     );
     return (
         <div className="chat-page">
-            <Container>
+            <Container fluid>
+                <div></div>
                 <Row>
-                    <Col xl={12}>
+                    <Col xs={{ span: 2, offset: 1 }} className="chat-box shadow rounded">
+                        <Row className="no-gutters">
+                            <Col xs={12} className="user-area-banner">
+                                <div className="mb-5">Hello</div>
+                                {tempUsers}
+                            </Col>
+                        </Row>
+                    </Col>
+                    <Col xs={8}>
                         <div className="chat-box shadow rounded">
                             <Row>
                                 <Col xl={12}>
                                     <div className="message-area">
-                                        <div className="speech-wrapper ">
-                                            {/* <Row>
-                                                <Col>
-                                                    <div className="text-center">
-                                                        <p className="moderator-text ">
-                                                            Meister_Kwame Joined the Chat<span> ~ Moderator</span>
-                                                        </p>
-                                                    </div>
-                                                </Col>
-                                            </Row>
-                                            <Row>
-                                                <Col>
-                                                    <div className="bubble shadow rounded">
-                                                        <div className="txt">
-                                                            <p className="name">Benni</p>
-                                                            <p className="message">Hey, check out this Pure CSS speech bubble...</p>
-                                                            <span className="timestamp">10:20 pm</span>
-                                                        </div>
-                                                        <div className="bubble-arrow"></div>
-                                                    </div>
-                                                </Col>
-                                            </Row>
-                                            <Row>
-                                                <Col>
-                                                    <div className="bubble alt shadow rounded">
-                                                        <div className="txt">
-                                                            <p className="name alt">
-                                                                +353 87 1234 567<span> ~ John</span>
-                                                            </p>
-                                                            <p className="message">Nice... this will work great for my new project.</p>
-                                                            <span className="timestamp">10:22 pm</span>
-                                                        </div>
-                                                        <div className="bubble-arrow alt"></div>
-                                                    </div>
-                                                </Col>
-                                            </Row> */}
-                                            {chat}
-                                        </div>
+                                        <div className="speech-wrapper ">{chat}</div>
                                     </div>
                                 </Col>
                             </Row>
@@ -164,10 +152,6 @@ const Chat = ({ location, history }) => {
                         </div>
                     </Col>
                 </Row>
-                {/* <div>
-                    {chat}
-                    
-                </div> */}
             </Container>
         </div>
     );

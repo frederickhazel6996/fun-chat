@@ -6,6 +6,7 @@ import { Notyf } from "notyf";
 import "notyf/notyf.min.css";
 import "./index.scss";
 import RPT from "prop-types";
+const spawn = require("spawn-password");
 
 let notyf = new Notyf({
     position: {
@@ -13,11 +14,14 @@ let notyf = new Notyf({
         y: "top",
     },
 });
+
+let UNIQUE_USER = spawn.spawnAlphaNumericLength(25);
 function HomePage({ history }) {
     const { register, handleSubmit } = useForm();
 
     let submitHandler = (data) => {
-        history.push(`/chat?name=${data.username}&room=${data.room}`);
+        let uniqueID = `${data.username.trim().toLowerCase()}${data.room.trim().toLowerCase()}${UNIQUE_USER.trim().toLowerCase()}`;
+        history.push(`/chat?name=${data.username}&room=${data.room}&id=${uniqueID}`);
     };
     return (
         <div className=" home-background">

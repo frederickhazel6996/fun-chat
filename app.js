@@ -44,13 +44,25 @@ const io = require("socket.io")(server, {
 
 io.on("connection", (socket) => {
     console.log("User connected to sockets");
-    socket.on("join", ({ name, room }, callback) => {
-        const { error, user } = addUser({ id: socket.id, name, room });
+    socket.on("join", ({ name, room, id }, callback) => {
+        const { error, user, rejoin } = addUser({ id: socket.id, name, room, user_id: id });
+        const usersInroom = getUsersInRoom(room.trim().toLowerCase());
+        // console.log(error);
         if (error) return callback(error);
 
-        socket.emit("message", { user: "Moderator", text: `${user.name} welcome to ${user.room}` });
-        socket.broadcast.to(user.room).emit("message", { user: "Moderator", text: `${user.name} has joined the chat` });
-        socket.join(user.room);
+        if (user) {
+            socket.emit("message", { user: "Moderator", text: `${user.name} welcome to ${user.room}`, users: usersInroom });
+            socket.broadcast.to(user.room).emit("message", { user: "Moderator", text: `${user.name} has joined the chat`, users: usersInroom });
+            socket.join(user.room);
+        }
+
+        if (rejoin) {
+            socket.emit("message", { user: "Moderator", text: `${rejoin.name} welcome Back`, users: usersInroom });
+            socket.broadcast
+                .to(rejoin.room)
+                .emit("message", { user: "Moderator", text: `${rejoin.name} has re-joined the chat`, users: usersInroom });
+            socket.join(rejoin.room);
+        }
         callback();
     });
 
@@ -61,7 +73,10 @@ io.on("connection", (socket) => {
 
         callback();
     });
-
+    socket.on("closechat", () => {
+        console.log("close chat");
+        socket.disconnect();
+    });
     try {
         socket.on("disconnect", () => {
             const user = getUser(socket.id);
