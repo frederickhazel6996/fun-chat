@@ -54,20 +54,11 @@ const Chat = ({ location, history }) => {
         });
     }, [messages]);
 
-    const bottomRef = useRef();
-
-    const scrollToBottom = () => {
-        bottomRef.current.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-        });
-    };
-
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
     let tempUsers = users.map((user) => (
         <div className="users-field">
+            <span>
+                <i className="fas fa-user mr-3"></i>
+            </span>{" "}
             {user.name}
             <br />
         </div>
@@ -127,7 +118,12 @@ const Chat = ({ location, history }) => {
                     <Col xs={{ span: 2, offset: 1 }} className="chat-box shadow rounded">
                         <Row className="no-gutters">
                             <Col xs={12} className="user-area-banner">
-                                <div className="mb-5">{room}</div>
+                                <div className="mb-5">
+                                    <span>
+                                        <i className="fas fa-users mr-3"></i>
+                                    </span>
+                                    {room} Members
+                                </div>
                                 {tempUsers}
                             </Col>
                         </Row>
@@ -137,10 +133,7 @@ const Chat = ({ location, history }) => {
                             <Row>
                                 <Col xl={12}>
                                     <div className="message-area">
-                                        <div className="speech-wrapper ">
-                                            {chat}
-                                            <div ref={bottomRef} />
-                                        </div>
+                                        <div className="speech-wrapper ">{chat}</div>
                                     </div>
                                 </Col>
                             </Row>

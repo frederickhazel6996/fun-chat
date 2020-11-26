@@ -16,6 +16,8 @@ $primary-accent: #5dbcd2;
     background-color: white;
     margin-top: 0px;
     overflow-y: scroll;
+    display: flex;
+    flex-direction: column-reverse;
 }
 .text-field {
     width: 100%;
