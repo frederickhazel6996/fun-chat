@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import queryString from "query-string";
 import io from "socket.io-client";
 import RPT from "prop-types";
@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import Emoji from "react-emoji-render";
 import "./chat.scss";
+import { Colors } from "../../values";
 const spawn = require("spawn-password");
 let ENDPOINT = "localhost:5000";
 let socket;
@@ -41,20 +42,33 @@ const Chat = ({ location, history }) => {
             document.getElementById("message-form").reset();
         });
     };
-    console.log(message, messages);
 
     useEffect(() => {
         socket.on("message", (message) => {
             let newMessage = { user: message.user, text: message.text };
             setmessages([...messages, newMessage]);
-            // console.log(message.users);
-            // setusers(message.users);
+            if (message.users === undefined) {
+            } else {
+                setusers(message.users);
+            }
         });
     }, [messages]);
 
+    const bottomRef = useRef();
+
+    const scrollToBottom = () => {
+        bottomRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+        });
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
     let tempUsers = users.map((user) => (
         <div className="users-field">
-            {user}
+            {user.name}
             <br />
         </div>
     ));
@@ -76,7 +90,7 @@ const Chat = ({ location, history }) => {
                 <Col>
                     <div className="bubble alt shadow rounded">
                         <div className="txt">
-                            <p className="name alt">{chat.user}</p>
+                            <p className="name alt ">{chat.user}</p>
                             <p className="message">
                                 <Emoji text={chat.text} />
                             </p>
@@ -91,7 +105,9 @@ const Chat = ({ location, history }) => {
                 <Col>
                     <div className="bubble shadow rounded">
                         <div className="txt">
-                            <p className="name">{chat.user}</p>
+                            <p className="name" style={{ color: Colors[Math.floor(Math.random() * Colors.length)] }}>
+                                {chat.user}
+                            </p>
                             <p className="message">
                                 <Emoji text={chat.text} />
                             </p>
@@ -111,7 +127,7 @@ const Chat = ({ location, history }) => {
                     <Col xs={{ span: 2, offset: 1 }} className="chat-box shadow rounded">
                         <Row className="no-gutters">
                             <Col xs={12} className="user-area-banner">
-                                <div className="mb-5">Hello</div>
+                                <div className="mb-5">{room}</div>
                                 {tempUsers}
                             </Col>
                         </Row>
@@ -121,7 +137,10 @@ const Chat = ({ location, history }) => {
                             <Row>
                                 <Col xl={12}>
                                     <div className="message-area">
-                                        <div className="speech-wrapper ">{chat}</div>
+                                        <div className="speech-wrapper ">
+                                            {chat}
+                                            <div ref={bottomRef} />
+                                        </div>
                                     </div>
                                 </Col>
                             </Row>

@@ -12,3 +12,5 @@ export const RainIcon = require("./Assets/icons/rainy.svg").default;
 export const SnowIcon = require("./Assets/icons/snowflake.svg").default;
 export const SunIcon = require("./Assets/icons/sun.svg").default;
 export const ExtremeIcon = require("./Assets/icons/tornado.svg").default;
+
+export const Colors = ["red", "coral", "yellow", "gold", "lime", "indigo", "orangered", "cyan", "teal", "black"];

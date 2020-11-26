@@ -47,7 +47,8 @@ io.on("connection", (socket) => {
     socket.on("join", ({ name, room, id }, callback) => {
         const { error, user, rejoin } = addUser({ id: socket.id, name, room, user_id: id });
         const usersInroom = getUsersInRoom(room.trim().toLowerCase());
-        // console.log(error);
+        console.log(error);
+
         if (error) return callback(error);
 
         if (user) {

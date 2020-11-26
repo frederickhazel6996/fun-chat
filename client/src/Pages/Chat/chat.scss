@@ -228,3 +228,9 @@ input[class*="text-input"]:focus {
     text-align: left;
     color: black;
 }
+
+.messages {
+    padding: 5% 0;
+    overflow: auto;
+    flex: auto;
+}
