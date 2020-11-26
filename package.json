@@ -3,10 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "scripts": { 
-    "start": "pm2-runtime start ecosystem.config.js --env production",
+        "start": "pm2-runtime start ecosystem.config.js --env production",
+
         "heroku-postbuild": "cd client && npm install && npm run build",
         "client": "cd client && npm start",
         "server": "nodemon ./bin/www",
+        "serverp":"node ./app.js",
         "test": "cd client && node scripts/test.js"
   },
   "dependencies": {
