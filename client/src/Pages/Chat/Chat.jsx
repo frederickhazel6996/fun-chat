@@ -97,7 +97,7 @@ const Chat = ({ location, history }) => {
                 <Col>
                     <div className="bubble shadow rounded">
                         <div className="txt">
-                            <p className="name" style={{ color: Colors[Math.floor(Math.random() * Colors.length)] }}>
+                            <p className="name" style={{ color: Colors[9] }}>
                                 {chat.user}
                             </p>
                             <p className="message">
